@@ -1,0 +1,17 @@
+{
+  "name": "coursesphere",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "commit": "cz"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
+  },
+  "devDependencies": {
+    "commitizen": "^4.3.1",
+    "cz-conventional-changelog": "^3.3.0"
+  }
+}
