@@ -2,6 +2,7 @@ import cors from "@fastify/cors";
 import fastify, { type FastifyError, type FastifyInstance } from "fastify";
 import { authRoutes } from "./routes/auth.routes.js";
 import { coursesRoutes } from "./routes/courses.routes.js";
+import { lessonsRoutes } from "./routes/lessons.routes.js";
 
 export async function buildApp(): Promise<FastifyInstance> {
   const app = fastify({ logger: true });
@@ -20,6 +21,7 @@ export async function buildApp(): Promise<FastifyInstance> {
 
   await app.register(authRoutes, { prefix: "/api/auth" });
   await app.register(coursesRoutes, { prefix: "/api/courses" });
+  await app.register(lessonsRoutes, { prefix: "/api/courses/:courseId/lessons" });
 
   return app;
 }
