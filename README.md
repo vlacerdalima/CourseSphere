@@ -219,3 +219,17 @@ npm test
 ## Credenciais de teste
 
 > _A serem preenchidas após o deploy. O fluxo de registro está disponível e funcional para criação de novos usuários._
+
+## Diário de desenvolvimento
+
+### Dia 1 — Fundação e autenticação
+
+Defini a stack e a arquitetura antes de escrever qualquer linha de código. Optei por **Node.js + Fastify** no backend em vez de Rails (sugestão do desafio) por ser minha stack principal — escolha racional pelo prazo de uma semana, com arquitetura MVC explícita pra alinhar com a expectativa de quem avalia. Frontend ficou com **Next.js + Tailwind + shadcn/ui** em monorepo separado, deixando o contrato HTTP entre as duas camadas explícito em vez de borrá-lo com server actions.
+
+Setup inicial cobriu monorepo, schema Prisma com `User`, `Course` e `Lesson` (UUIDs e cascade delete), `docker-compose` para PostgreSQL local, e a infraestrutura base do Fastify (CORS, error handler global, singleton do Prisma, helpers de JWT, middleware de autenticação).
+
+Implementei o **módulo de autenticação completo** com registro e login. Decisões de segurança que vale destacar: senha com hash bcrypt, mensagens de erro genéricas em ambos os endpoints para evitar enumeração de emails, e payload do JWT contendo apenas `userId` (não `email`, que é mutável e expõe dado pessoal desnecessariamente já que JWT é apenas assinado, não criptografado). Cobertura de testes com Jest + Supertest validando os fluxos críticos: registro válido, email duplicado, login válido, credenciais inválidas.
+
+Revisando o controller de auth depois de pronto, percebi que o hash da senha estava sendo feito ali — o que tecnicamente é regra de negócio vazando pra camada HTTP. Refatorei movendo o `bcrypt.hash` pra dentro do `createUser` no model, e a verificação de senha pra um helper `verifyUserPassword` também no model. O controller ficou verdadeiramente HTTP-only: valida input, chama o model, retorna status. Pequena mudança, mas consolida a separação MVC que é critério explícito de avaliação.
+
+**Stack confirmada ao final do dia:** Fastify · TypeScript · Prisma · PostgreSQL · Zod · JWT · bcrypt · Jest · Next.js · Tailwind · shadcn/ui · TanStack Query.
