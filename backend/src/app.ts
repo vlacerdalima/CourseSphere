@@ -1,1 +1,24 @@
-// Fastify app factory: registers plugins (@fastify/cors, etc.), attaches all route modules, and exports the configured app instance.
+import cors from "@fastify/cors";
+import fastify, { type FastifyInstance } from "fastify";
+
+export async function buildApp(): Promise<FastifyInstance> {
+  const app = fastify({ logger: true });
+
+  await app.register(cors, {
+    origin: process.env.CORS_ORIGIN ?? "http://localhost:3000",
+  });
+
+  app.setErrorHandler((error, _request, reply) => {
+    const statusCode = error.statusCode ?? 500;
+    const message =
+      statusCode >= 500 ? "Erro interno do servidor" : error.message;
+
+    reply.status(statusCode).send({ message });
+  });
+
+  // Rotas serão registradas aqui (Dia 2)
+  // await app.register(authRoutes, { prefix: "/api/auth" });
+  // await app.register(courseRoutes, { prefix: "/api/courses" });
+
+  return app;
+}
