@@ -1,4 +1,5 @@
 import { prisma } from "../lib/prisma.js";
+import bcrypt from "bcrypt";
 
 type UserPublic = { id: string; name: string; email: string };
 type UserWithPassword = UserPublic & { password: string };
@@ -8,8 +9,9 @@ export async function createUser(data: {
   email: string;
   password: string;
 }): Promise<UserPublic> {
+  const hashedPassword = await bcrypt.hash(data.password, 10);
   return prisma.user.create({
-    data,
+    data: {...data,password: hashedPassword},
     select: { id: true, name: true, email: true },
   });
 }

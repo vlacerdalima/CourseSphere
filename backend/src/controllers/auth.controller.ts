@@ -23,8 +23,8 @@ export async function registerController(
     return reply.status(400).send({ error: REGISTER_ERROR });
   }
 
-  const hashedPassword = await bcrypt.hash(password, 10);
-  const user = await createUser({ name, email, password: hashedPassword });
+  
+  const user = await createUser({ name, email, password });
   const token = sign({ userId: user.id });
 
   return reply.status(201).send({ token, user });
