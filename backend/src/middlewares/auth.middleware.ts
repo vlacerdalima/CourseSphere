@@ -1,9 +1,10 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { verify, type JwtPayload } from "../lib/jwt.js";
+import { verify } from "../lib/jwt.js";
+import { findUserById } from "../models/user.model.js";
 
 declare module "fastify" {
   interface FastifyRequest {
-    user: JwtPayload;
+    user: { id: string; name: string; email: string };
   }
 }
 
@@ -14,14 +15,22 @@ export async function authenticate(
   const authHeader = request.headers.authorization;
 
   if (!authHeader?.startsWith("Bearer ")) {
-    return reply.status(401).send({ message: "Token não fornecido" });
+    return reply.status(401).send({ error: "Não autenticado." });
   }
 
   const token = authHeader.slice(7);
 
+  let userId: string;
   try {
-    request.user = verify(token);
+    ({ userId } = verify(token));
   } catch {
-    return reply.status(401).send({ message: "Token inválido ou expirado" });
+    return reply.status(401).send({ error: "Não autenticado." });
   }
+
+  const user = await findUserById(userId);
+  if (!user) {
+    return reply.status(401).send({ error: "Não autenticado." });
+  }
+
+  request.user = user;
 }
