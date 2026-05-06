@@ -1,5 +1,6 @@
 import cors from "@fastify/cors";
 import fastify, { type FastifyInstance } from "fastify";
+import { authRoutes } from "./routes/auth.routes.js";
 
 export async function buildApp(): Promise<FastifyInstance> {
   const app = fastify({ logger: true });
@@ -16,9 +17,7 @@ export async function buildApp(): Promise<FastifyInstance> {
     reply.status(statusCode).send({ message });
   });
 
-  // Rotas serão registradas aqui (Dia 2)
-  // await app.register(authRoutes, { prefix: "/api/auth" });
-  // await app.register(courseRoutes, { prefix: "/api/courses" });
+  await app.register(authRoutes, { prefix: "/api/auth" });
 
   return app;
 }
