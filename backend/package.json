@@ -4,12 +4,13 @@
   "description": "CourseSphere backend — Fastify + Prisma + TypeScript",
   "main": "dist/server.js",
   "scripts": {
+    "postinstall": "prisma generate",
     "dev": "tsx watch src/server.ts",
     "build": "tsup src --format cjs --clean",
     "start": "node dist/server.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "test": "jest",
+    "test": "jest --runInBand --forceExit",
     "lint": "eslint src --ext .ts"
   },
   "keywords": [],
