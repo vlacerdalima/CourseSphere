@@ -8,6 +8,7 @@ export type CourseWithCreator = {
   id: string;
   name: string;
   description: string | null;
+  coverUrl: string | null;
   startDate: Date;
   endDate: Date;
   createdAt: Date;
@@ -17,6 +18,7 @@ export type CourseWithCreator = {
 type LessonSummary = {
   id: string;
   title: string;
+  description: string | null;
   status: LessonStatus;
   videoUrl: string | null;
   createdAt: Date;
@@ -30,6 +32,7 @@ const courseSelect = {
   id: true,
   name: true,
   description: true,
+  coverUrl: true,
   startDate: true,
   endDate: true,
   createdAt: true,
@@ -74,6 +77,7 @@ export async function findCourseById(id: string): Promise<CourseFullDetails | nu
       id: true,
       name: true,
       description: true,
+      coverUrl: true,
       startDate: true,
       endDate: true,
       createdAt: true,
@@ -82,6 +86,7 @@ export async function findCourseById(id: string): Promise<CourseFullDetails | nu
         select: {
           id: true,
           title: true,
+          description: true,
           status: true,
           videoUrl: true,
           createdAt: true,

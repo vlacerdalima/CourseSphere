@@ -5,6 +5,7 @@ import type { CreateLessonInput, UpdateLessonInput } from "../schemas/lesson.sch
 export type LessonResponse = {
   id: string;
   title: string;
+  description: string | null;
   status: LessonStatus;
   videoUrl: string | null;
   createdAt: Date;
@@ -13,6 +14,7 @@ export type LessonResponse = {
 const lessonSelect = {
   id: true,
   title: true,
+  description: true,
   status: true,
   videoUrl: true,
   createdAt: true,
@@ -25,6 +27,7 @@ export async function createLesson(
   return prisma.lesson.create({
     data: {
       title: data.title,
+      description: data.description,
       status: data.status,
       videoUrl: data.videoUrl,
       courseId,
