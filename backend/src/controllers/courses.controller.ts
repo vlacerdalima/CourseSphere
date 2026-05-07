@@ -2,6 +2,7 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import {
   createCourse,
   deleteCourse,
+  findAllCourses,
   findCourseById,
   findCoursesByCreator,
   updateCourse,
@@ -84,6 +85,19 @@ export async function updateController(
 
   const updated = await updateCourse(id, result.data);
   return reply.status(200).send(updated);
+}
+
+export async function exploreController(
+  request: FastifyRequest,
+  reply: FastifyReply,
+): Promise<void> {
+  const result = listCoursesQuerySchema.safeParse(request.query);
+  if (!result.success) {
+    return reply.status(400).send({ error: VALIDATION_ERROR });
+  }
+
+  const courses = await findAllCourses(result.data.search);
+  return reply.status(200).send(courses);
 }
 
 export async function deleteController(
