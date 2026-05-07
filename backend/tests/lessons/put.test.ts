@@ -211,6 +211,70 @@ describe("PUT /api/courses/:courseId/lessons/:id", () => {
     expect(response.json().error).toBe("Curso não encontrado.");
   });
 
+  it("deve adicionar description a aula que não tinha → 200, description sai de null para o valor", async () => {
+    const { token } = await createAuthenticatedUser(app);
+    const course = await createTestCourse(app, token);
+    const lesson = await createTestLesson(app, token, course.id);
+
+    expect(lesson.description).toBeNull();
+
+    const response = await app.inject({
+      method: "PUT",
+      url: `/api/courses/${course.id}/lessons/${lesson.id}`,
+      headers: { authorization: `Bearer ${token}` },
+      payload: { description: "Conteúdo adicionado depois" },
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json().description).toBe("Conteúdo adicionado depois");
+  });
+
+  it("deve atualizar description existente → 200, retorna novo valor", async () => {
+    const { token } = await createAuthenticatedUser(app);
+    const course = await createTestCourse(app, token);
+    const lesson = await createTestLesson(app, token, course.id, { title: "Aula Descrita" });
+
+    await app.inject({
+      method: "PUT",
+      url: `/api/courses/${course.id}/lessons/${lesson.id}`,
+      headers: { authorization: `Bearer ${token}` },
+      payload: { description: "Descrição inicial" },
+    });
+
+    const response = await app.inject({
+      method: "PUT",
+      url: `/api/courses/${course.id}/lessons/${lesson.id}`,
+      headers: { authorization: `Bearer ${token}` },
+      payload: { description: "Descrição atualizada" },
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json().description).toBe("Descrição atualizada");
+  });
+
+  it("deve atualizar apenas description, título e status permanecem inalterados → 200", async () => {
+    const { token } = await createAuthenticatedUser(app);
+    const course = await createTestCourse(app, token);
+    const lesson = await createTestLesson(app, token, course.id, {
+      title: "Título Fixo",
+      status: "published",
+    });
+
+    const response = await app.inject({
+      method: "PUT",
+      url: `/api/courses/${course.id}/lessons/${lesson.id}`,
+      headers: { authorization: `Bearer ${token}` },
+      payload: { description: "Só a descrição mudou" },
+    });
+
+    expect(response.statusCode).toBe(200);
+    const body = response.json();
+    expect(body.description).toBe("Só a descrição mudou");
+    expect(body.title).toBe("Título Fixo");
+    expect(body.status).toBe("published");
+    expect(Object.keys(body).sort()).toEqual(LESSON_KEYS);
+  });
+
   it("deve rejeitar requisição sem token → 401", async () => {
     const response = await app.inject({
       method: "PUT",

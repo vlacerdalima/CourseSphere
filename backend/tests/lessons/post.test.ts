@@ -207,6 +207,38 @@ describe("POST /api/courses/:courseId/lessons", () => {
     expect(response.json().error).toBe("Curso não encontrado.");
   });
 
+  it("deve criar aula com description → 201, retorna description", async () => {
+    const { token } = await createAuthenticatedUser(app);
+    const course = await createTestCourse(app, token);
+
+    const response = await app.inject({
+      method: "POST",
+      url: `/api/courses/${course.id}/lessons`,
+      headers: { authorization: `Bearer ${token}` },
+      payload: { title: "Aula com Descrição", description: "Introdução ao módulo" },
+    });
+
+    expect(response.statusCode).toBe(201);
+    const body = response.json();
+    expect(body.description).toBe("Introdução ao módulo");
+    expect(Object.keys(body).sort()).toEqual(LESSON_KEYS);
+  });
+
+  it("deve criar aula sem description → 201, description retorna null", async () => {
+    const { token } = await createAuthenticatedUser(app);
+    const course = await createTestCourse(app, token);
+
+    const response = await app.inject({
+      method: "POST",
+      url: `/api/courses/${course.id}/lessons`,
+      headers: { authorization: `Bearer ${token}` },
+      payload: { title: "Aula Sem Descrição" },
+    });
+
+    expect(response.statusCode).toBe(201);
+    expect(response.json().description).toBeNull();
+  });
+
   it("deve rejeitar requisição sem token → 401", async () => {
     const response = await app.inject({
       method: "POST",
