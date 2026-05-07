@@ -25,6 +25,7 @@ model Course {
   description String?
   startDate   DateTime @map("start_date")
   endDate     DateTime @map("end_date")
+  coverUrl    String?  @map("cover_url")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
@@ -42,9 +43,10 @@ enum LessonStatus {
 }
 
 model Lesson {
-  id        String       @id @default(uuid())
-  title     String
-  status    LessonStatus @default(draft)
+  id          String       @id @default(uuid())
+  title       String
+  description String?
+  status      LessonStatus @default(draft)
   videoUrl  String?      @map("video_url")
   createdAt DateTime     @default(now()) @map("created_at")
   updatedAt DateTime     @updatedAt @map("updated_at")

@@ -8,7 +8,7 @@ let app: FastifyInstance;
 const VALID_USER = {
   name: "João Silva",
   email: "register.test@coursesphere.test",
-  password: "senha123",
+  password: "Senha123",
 };
 
 beforeAll(async () => {

@@ -3,7 +3,7 @@ import type { FastifyInstance } from "fastify";
 
 export { createAuthenticatedUser, createTestCourse } from "../courses/helpers";
 
-export const LESSON_KEYS = ["createdAt", "id", "status", "title", "videoUrl"];
+export const LESSON_KEYS = ["createdAt", "description", "id", "status", "title", "videoUrl"];
 
 export async function createTestLesson(
   app: FastifyInstance,
@@ -25,6 +25,7 @@ export async function createTestLesson(
   return response.json() as {
     id: string;
     title: string;
+    description: string | null;
     status: "draft" | "published";
     videoUrl: string | null;
     createdAt: string;

@@ -26,6 +26,7 @@ const videoUrlSchema = z
 
 export const createLessonSchema = z.object({
   title: z.string().trim().min(3, "Título deve ter no mínimo 3 caracteres"),
+  description: z.string().trim().optional(),
   status: z.enum(["draft", "published"]).optional().default("draft"),
   videoUrl: videoUrlSchema.optional(),
 });
@@ -37,6 +38,7 @@ export const updateLessonSchema = z
       .trim()
       .min(3, "Título deve ter no mínimo 3 caracteres")
       .optional(),
+    description: z.string().trim().optional(),
     status: z.enum(["draft", "published"]).optional(),
     videoUrl: videoUrlSchema.optional(),
   })

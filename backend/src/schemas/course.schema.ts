@@ -4,6 +4,7 @@ export const createCourseSchema = z
   .object({
     name: z.string().trim().min(3, "Nome deve ter no mínimo 3 caracteres"),
     description: z.string().trim().optional(),
+    coverUrl: z.string().url("URL inválida").optional(),
     startDate: z.coerce.date(),
     endDate: z.coerce.date(),
   })
@@ -16,6 +17,7 @@ export const updateCourseSchema = z
   .object({
     name: z.string().trim().min(3, "Nome deve ter no mínimo 3 caracteres").optional(),
     description: z.string().trim().optional(),
+    coverUrl: z.string().url("URL inválida").optional(),
     startDate: z.coerce.date().optional(),
     endDate: z.coerce.date().optional(),
   })
