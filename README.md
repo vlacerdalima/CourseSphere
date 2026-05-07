@@ -20,7 +20,7 @@ Projeto desenvolvido como desafio técnico para a vaga de estágio Full Stack na
 ## Stack
 
 **Backend:** Node.js, TypeScript, Fastify, Prisma, PostgreSQL, Zod, JWT, bcrypt
-**Frontend:** Next.js 14 (App Router), TypeScript, Tailwind, shadcn/ui, TanStack Query, Axios, React Hook Form
+**Frontend:** React 18 + Vite, TypeScript, Tailwind CSS v3, shadcn/ui, TanStack Query, Axios, React Hook Form, React Router DOM v6
 **Infra:** Docker Compose (dev local), Railway (backend), Vercel (frontend), Neon (PostgreSQL gerenciado)
 **Testes:** Jest + Supertest
 
@@ -197,7 +197,7 @@ Validação de regras de negócio: `endDate >= startDate` em cursos, `title >= 3
    npm install
    npm run dev
    ```
-   App disponível em `http://localhost:3000`.
+   App disponível em `http://localhost:5173`.
 
 ## Testes
 
@@ -233,3 +233,13 @@ Implementei o **módulo de autenticação completo** com registro e login. Decis
 Revisando o controller de auth depois de pronto, percebi que o hash da senha estava sendo feito ali — o que tecnicamente é regra de negócio vazando pra camada HTTP. Refatorei movendo o `bcrypt.hash` pra dentro do `createUser` no model, e a verificação de senha pra um helper `verifyUserPassword` também no model. O controller ficou verdadeiramente HTTP-only: valida input, chama o model, retorna status. Pequena mudança, mas consolida a separação MVC que é critério explícito de avaliação.
 
 **Stack confirmada ao final do dia:** Fastify · TypeScript · Prisma · PostgreSQL · Zod · JWT · bcrypt · Jest · Next.js · Tailwind · shadcn/ui · TanStack Query.
+
+### Dia 2 — Cursos, aulas e backend completo
+
+Implementei os módulos de **cursos** e **aulas** com CRUD completo, cobrindo o backend inteiro em dois dias. No módulo de cursos, optei por verificar autoria em memória (`course.creator.id === request.user.id`) usando dados já retornados por `findCourseById`, em vez de criar uma função `isCourseCreator` com query separada — elimina uma roundtrip ao banco em toda operação de update/delete sem perder segurança. Durante a implementação, identifiquei que o middleware de auth injetava apenas o payload do JWT (`{ userId }`) em vez do usuário completo. Refatorei para buscar o usuário no banco a cada request autenticado — isso padronizou `request.user.id` em todo o codebase e adicionou uma camada de segurança: se o usuário for deletado após o JWT ser emitido, a requisição retorna 401 em vez de prosseguir com dados órfãos.
+
+No módulo de aulas, a decisão principal foi usar **rotas aninhadas** (`/api/courses/:courseId/lessons`) em vez de rotas planas com `courseId` no body. A rota explicita a hierarquia REST e torna a relação entre entidades visível na URL. Criei um helper `assertCourseOwnership` em `src/lib/authorization.ts` que retorna um `AuthorizationResult` tipado em vez de lançar exceção — padrão funcional que mantém o fluxo de controle previsível nos controllers. O model usa `findLessonByIdAndCourseId` com filtro duplo (`lessonId AND courseId`) para impedir acesso cruzado entre cursos: aula existente em outro curso retorna 404, sem vazar existência de recursos.
+
+Validação de `videoUrl` usa whitelist de domínios (YouTube e Vimeo) via `new URL().hostname` dentro de um `.refine()` do Zod. `courseId` é imutável no PUT — campo não declarado no schema Zod, então descartado silenciosamente. Status padrão de aula é `draft`.
+
+**Resultado do dia:** backend 100% completo. 78 testes passando (11 auth + 28 cursos + 39 aulas), zero regressões entre módulos. Pronto pra iniciar o frontend.
