@@ -47,6 +47,7 @@ export async function createCourse(
     data: {
       name: data.name,
       description: data.description,
+      coverUrl: data.coverUrl,
       startDate: data.startDate,
       endDate: data.endDate,
       creatorId,
@@ -110,4 +111,13 @@ export async function updateCourse(
 
 export async function deleteCourse(id: string): Promise<void> {
   await prisma.course.delete({ where: { id } });
+}
+
+export async function findAllCourses(search?: string): Promise<CourseWithCreator[]> {
+  const trimmed = search?.trim();
+  return prisma.course.findMany({
+    where: trimmed ? { name: { contains: trimmed, mode: "insensitive" } } : {},
+    select: courseSelect,
+    orderBy: { createdAt: "desc" },
+  });
 }

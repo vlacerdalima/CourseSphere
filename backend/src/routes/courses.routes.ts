@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 import {
   createController,
   deleteController,
+  exploreController,
   indexController,
   showController,
   updateController,
@@ -12,6 +13,7 @@ export async function coursesRoutes(app: FastifyInstance): Promise<void> {
   app.addHook("onRequest", authenticate);
 
   app.get("/", indexController);
+  app.get("/explore", exploreController);
   app.get("/:id", showController);
   app.post("/", createController);
   app.put("/:id", updateController);
