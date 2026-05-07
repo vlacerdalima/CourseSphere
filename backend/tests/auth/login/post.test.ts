@@ -8,7 +8,7 @@ let app: FastifyInstance;
 const TEST_USER = {
   name: "Login Test",
   email: "login.test@coursesphere.test",
-  password: "senha123",
+  password: "Senha123",
 };
 
 beforeAll(async () => {
@@ -50,7 +50,7 @@ describe("POST /api/auth/login", () => {
     const response = await app.inject({
       method: "POST",
       url: "/api/auth/login",
-      payload: { email: "naoexiste@email.com", password: "senha123" },
+      payload: { email: "naoexiste@email.com", password: "Senha123" },
     });
 
     expect(response.statusCode).toBe(401);
@@ -82,7 +82,7 @@ describe("POST /api/auth/login", () => {
     const response = await app.inject({
       method: "POST",
       url: "/api/auth/login",
-      payload: { email: "nao-e-um-email", password: "senha123" },
+      payload: { email: "nao-e-um-email", password: "Senha123" },
     });
 
     expect(response.statusCode).toBe(401);

@@ -21,7 +21,7 @@ export async function createAuthenticatedUser(
   const payload = {
     name: overrides?.name ?? "Test User",
     email: overrides?.email ?? makeEmail(),
-    password: overrides?.password ?? "senha123",
+    password: overrides?.password ?? "Senha123",
   };
 
   const response = await server.inject({
@@ -53,6 +53,7 @@ export async function createTestCourse(
     id: string;
     name: string;
     description: string | null;
+    coverUrl: string | null;
     startDate: string;
     endDate: string;
     createdAt: string;
