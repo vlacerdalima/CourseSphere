@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
+import { Eye, EyeOff } from "lucide-react"; // Importando os ícones
 
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -20,7 +21,10 @@ import {
 const registerFormSchema = z.object({
   name: z.string().trim().min(2, "Nome deve ter no mínimo 2 caracteres"),
   email: z.string().email("Email inválido"),
-  password: z.string().min(6, "Senha deve ter no mínimo 6 caracteres"),
+  password: z.string()
+  .min(6, "Senha deve ter no mínimo 6 caracteres")
+  .regex(/[A-Z]/, "Senha deve conter pelo menos uma letra maiúscula")
+  .regex(/[0-9]/, "Senha deve conter pelo menos um número"),
 });
 
 type RegisterFormData = z.infer<typeof registerFormSchema>;
@@ -28,6 +32,7 @@ type RegisterFormData = z.infer<typeof registerFormSchema>;
 export function RegisterPage() {
   const { register: registerUser } = useAuth();
   const [serverError, setServerError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false); // Novo estado
 
   const {
     register,
@@ -86,12 +91,28 @@ export function RegisterPage() {
 
             <div className="space-y-1">
               <Label htmlFor="password">Senha</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••"
-                {...register("password")}
-              />
+              {/* Wrapper relativo para posicionar o ícone */}
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••"
+                  className="pr-10" // Adiciona um padding na direita para o texto não ficar sob o ícone
+                  {...register("password")}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground focus:outline-none"
+                  aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
               {errors.password && (
                 <p className="text-sm text-destructive">{errors.password.message}</p>
               )}
