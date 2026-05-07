@@ -20,7 +20,7 @@ Projeto desenvolvido como desafio técnico para a vaga de estágio Full Stack na
 ## Stack
 
 **Backend:** Node.js, TypeScript, Fastify, Prisma, PostgreSQL, Zod, JWT, bcrypt
-**Frontend:** Next.js 14 (App Router), TypeScript, Tailwind, shadcn/ui, TanStack Query, Axios, React Hook Form
+**Frontend:** React 18 + Vite, TypeScript, Tailwind CSS v3, shadcn/ui, TanStack Query, Axios, React Hook Form, React Router DOM v6
 **Infra:** Docker Compose (dev local), Railway (backend), Vercel (frontend), Neon (PostgreSQL gerenciado)
 **Testes:** Jest + Supertest
 
@@ -197,7 +197,7 @@ Validação de regras de negócio: `endDate >= startDate` em cursos, `title >= 3
    npm install
    npm run dev
    ```
-   App disponível em `http://localhost:3000`.
+   App disponível em `http://localhost:5173`.
 
 ## Testes
 
