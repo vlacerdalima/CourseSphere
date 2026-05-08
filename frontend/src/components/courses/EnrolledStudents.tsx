@@ -57,8 +57,8 @@ export function EnrolledStudents({ courseId }: EnrolledStudentsProps) {
         ) : isError ? (
           <p className="text-xs text-gray-400">Não foi possível carregar os alunos.</p>
         ) : (
-          <div className="space-y-2.5">
-            {students?.slice(0, 6).map((s) => (
+          <div className="space-y-2.5 max-h-64 overflow-y-auto">
+            {students?.map((s) => (
               <div key={s.id} className="flex items-center gap-2.5">
                 <img
                   src={s.avatarUrl}

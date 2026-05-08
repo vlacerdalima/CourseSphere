@@ -5,9 +5,10 @@ import { useAuth } from "@/hooks/useAuth";
 
 interface SidebarProps {
   onCreateCourse?: () => void;
+  onNavigate?: () => void;
 }
 
-export function Sidebar({ onCreateCourse }: SidebarProps) {
+export function Sidebar({ onCreateCourse, onNavigate }: SidebarProps) {
   const { user, logout } = useAuth();
   const { pathname } = useLocation();
 
@@ -20,7 +21,7 @@ export function Sidebar({ onCreateCourse }: SidebarProps) {
     <aside className="flex flex-col w-60 shrink-0 h-screen bg-white border-r border-gray-100">
       {/* Logo */}
       <div className="px-5 py-5 border-b border-gray-100">
-        <Link to="/courses" className="text-lg font-bold tracking-tight select-none">
+        <Link to="/courses" onClick={onNavigate} className="text-lg font-bold tracking-tight select-none">
           <span className="text-gray-900">Course</span>
           <span className="text-blue-600">Sphere</span>
         </Link>
@@ -34,6 +35,7 @@ export function Sidebar({ onCreateCourse }: SidebarProps) {
             <Link
               key={to}
               to={to}
+              onClick={onNavigate}
               className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                 active
                   ? "bg-blue-50 text-blue-700"
@@ -69,7 +71,7 @@ export function Sidebar({ onCreateCourse }: SidebarProps) {
             <p className="text-sm font-medium text-gray-900 truncate">{user?.name}</p>
           </div>
           <button
-            onClick={logout}
+            onClick={() => { onNavigate?.(); logout(); }}
             title="Sair"
             className="text-gray-400 hover:text-gray-700 transition-colors shrink-0"
           >
