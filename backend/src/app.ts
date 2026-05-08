@@ -9,6 +9,7 @@ export async function buildApp(): Promise<FastifyInstance> {
 
   await app.register(cors, {
     origin: process.env.CORS_ORIGIN ?? "http://localhost:3000",
+    methods: ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   });
 
   app.setErrorHandler((error: FastifyError, _request, reply) => {

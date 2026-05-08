@@ -93,8 +93,11 @@ export function CourseFormModal({ open, onOpenChange, course }: CourseFormModalP
         toast.success("Curso criado!");
       }
       onOpenChange(false);
-    } catch {
-      toast.error(isEdit ? "Erro ao atualizar curso." : "Erro ao criar curso.");
+    } catch (error: any) {
+      const status = error?.response?.status;
+      const body = error?.response?.data;
+      const detail = body?.error ?? body?.message ?? error?.message ?? "";
+      toast.error(`[${status ?? "Network"}] ${detail || (isEdit ? "Erro ao atualizar curso." : "Erro ao criar curso.")}`);
     }
   }
 
