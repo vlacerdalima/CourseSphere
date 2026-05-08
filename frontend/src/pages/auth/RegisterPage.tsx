@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -37,8 +37,11 @@ const strengthColor = ["", "bg-red-400", "bg-orange-400", "bg-yellow-400", "bg-g
 
 export function RegisterPage() {
   const { register: registerUser } = useAuth();
+  const [searchParams] = useSearchParams();
   const [serverError, setServerError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+
+  const redirectTo = searchParams.get("intent") === "teach" ? "/courses" : "/explore";
 
   const {
     register,
@@ -55,7 +58,7 @@ export function RegisterPage() {
   async function onSubmit(data: RegisterFormData) {
     setServerError(null);
     try {
-      await registerUser(data.name, data.email, data.password);
+      await registerUser(data.name, data.email, data.password, redirectTo);
     } catch (error: unknown) {
       const axiosError = error as { response?: { data?: { error?: string } } };
       const message =

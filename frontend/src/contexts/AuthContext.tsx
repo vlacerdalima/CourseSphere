@@ -9,7 +9,7 @@ interface AuthContextType {
   isLoading: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string) => Promise<void>;
+  register: (name: string, email: string, password: string, redirectTo?: string) => Promise<void>;
   logout: () => void;
 }
 
@@ -42,16 +42,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem("user", JSON.stringify(response.user));
     setToken(response.token);
     setUser(response.user);
-    navigate("/courses");
+    navigate("/explore");
   }
 
-  async function register(name: string, email: string, password: string) {
+  async function register(name: string, email: string, password: string, redirectTo: string = "/explore") {
     const response = await registerService(name, email, password);
     localStorage.setItem("token", response.token);
     localStorage.setItem("user", JSON.stringify(response.user));
     setToken(response.token);
     setUser(response.user);
-    navigate("/courses");
+    navigate(redirectTo);
   }
 
   function logout() {

@@ -100,10 +100,10 @@ export function HomePage() {
         {/* CTAs */}
         <div className="relative z-10 flex flex-col sm:flex-row gap-3 mb-14 w-full max-w-xs sm:max-w-none sm:w-auto">
           <Button size="lg" className="w-full sm:w-auto" asChild>
-            <Link to="/register">Começar grátis →</Link>
+            <Link to="/register">Quero aprender →</Link>
           </Button>
           <Button size="lg" variant="outline" className="w-full sm:w-auto" asChild>
-            <Link to="/register">Quero ensinar</Link>
+            <Link to="/register?intent=teach">Quero ensinar</Link>
           </Button>
         </div>
 
