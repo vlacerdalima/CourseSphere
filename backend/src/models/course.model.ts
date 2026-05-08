@@ -104,9 +104,16 @@ export async function updateCourse(
   id: string,
   data: UpdateCourseInput,
 ): Promise<CourseWithCreator> {
+  const { name, description, coverUrl, startDate, endDate } = data;
   return prisma.course.update({
     where: { id },
-    data,
+    data: {
+      ...(name !== undefined && { name }),
+      ...(description !== undefined && { description }),
+      ...(coverUrl !== undefined && { coverUrl }),
+      ...(startDate !== undefined && { startDate }),
+      ...(endDate !== undefined && { endDate }),
+    },
     select: courseSelect,
   });
 }

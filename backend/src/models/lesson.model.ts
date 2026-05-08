@@ -64,9 +64,15 @@ export async function updateLesson(
   lessonId: string,
   data: UpdateLessonInput,
 ): Promise<LessonResponse> {
+  const { title, description, status, videoUrl } = data;
   return prisma.lesson.update({
     where: { id: lessonId },
-    data,
+    data: {
+      ...(title !== undefined && { title }),
+      ...(description !== undefined && { description }),
+      ...(status !== undefined && { status }),
+      ...(videoUrl !== undefined && { videoUrl }),
+    },
     select: lessonSelect,
   });
 }
