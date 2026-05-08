@@ -25,3 +25,9 @@ export async function updateCourse(id: string, courseData: UpdateCourseData): Pr
 export async function deleteCourse(id: string): Promise<void> {
   await api.delete(`/courses/${id}`);
 }
+
+export async function getAllCourses(search?: string): Promise<Course[]> {
+  const params = search ? { search } : {};
+  const { data } = await api.get<Course[]>("/courses/explore", { params });
+  return data;
+}
