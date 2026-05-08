@@ -18,6 +18,7 @@ export interface Course {
   endDate: string;
   createdAt: string;
   creator: { id: string; name: string };
+  _count: { lessons: number };
 }
 
 export interface CourseWithLessons extends Course {

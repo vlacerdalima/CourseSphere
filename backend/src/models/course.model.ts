@@ -13,6 +13,7 @@ export type CourseWithCreator = {
   endDate: Date;
   createdAt: Date;
   creator: CourseCreator;
+  _count: { lessons: number };
 };
 
 type LessonSummary = {
@@ -37,6 +38,7 @@ const courseSelect = {
   endDate: true,
   createdAt: true,
   creator: { select: { id: true, name: true } },
+  _count: { select: { lessons: true } },
 } as const;
 
 export async function createCourse(

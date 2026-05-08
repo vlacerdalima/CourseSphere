@@ -9,6 +9,10 @@ import { PublicOnlyRoute } from "@/components/shared/PublicOnlyRoute";
 import { HomePage } from "@/pages/HomePage";
 import { LoginPage } from "@/pages/auth/LoginPage";
 import { RegisterPage } from "@/pages/auth/RegisterPage";
+import { CoursesPage } from "@/pages/courses/CoursesPage";
+import { ExplorePage } from "@/pages/courses/ExplorePage";
+import { CourseDetailPage } from "@/pages/courses/CourseDetailPage";
+import { LessonPlayerPage } from "@/pages/courses/LessonPlayerPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 
 const queryClient = new QueryClient({
@@ -36,7 +40,31 @@ function App() {
               path="/courses"
               element={
                 <ProtectedRoute>
-                  <div>Dashboard placeholder — próxima sessão</div>
+                  <CoursesPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/courses/:id"
+              element={
+                <ProtectedRoute>
+                  <CourseDetailPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/courses/:id/lessons/:lessonId"
+              element={
+                <ProtectedRoute>
+                  <LessonPlayerPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/explore"
+              element={
+                <ProtectedRoute>
+                  <ExplorePage />
                 </ProtectedRoute>
               }
             />
