@@ -2,7 +2,7 @@ import type { LessonStatus } from "@prisma/client";
 import { prisma } from "../lib/prisma.js";
 import type { CreateCourseInput, UpdateCourseInput } from "../schemas/course.schema.js";
 
-type CourseCreator = { id: string; name: string };
+type CourseCreator = { id: string; name: string; avatarUrl: string | null };
 
 export type CourseWithCreator = {
   id: string;
@@ -37,7 +37,7 @@ const courseSelect = {
   startDate: true,
   endDate: true,
   createdAt: true,
-  creator: { select: { id: true, name: true } },
+  creator: { select: { id: true, name: true, avatarUrl: true } },
   _count: { select: { lessons: true } },
 } as const;
 
@@ -84,7 +84,7 @@ export async function findCourseById(id: string): Promise<CourseFullDetails | nu
       startDate: true,
       endDate: true,
       createdAt: true,
-      creator: { select: { id: true, name: true } },
+      creator: { select: { id: true, name: true, avatarUrl: true } },
       lessons: {
         select: {
           id: true,

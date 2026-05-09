@@ -36,7 +36,7 @@ describe("POST /api/courses", () => {
     expect(body.description).toBe(defaultCourse.description);
     expect(body.creator.id).toBe(user.id);
     expect(body.creator.name).toBe(user.name);
-    expect(Object.keys(body.creator)).toEqual(["id", "name"]);
+    expect(Object.keys(body.creator).sort()).toEqual(["avatarUrl", "id", "name"]);
     expect(body).not.toHaveProperty("password");
     expect(new Date(body.startDate).getTime()).not.toBeNaN();
     expect(new Date(body.endDate).getTime()).not.toBeNaN();

@@ -4,7 +4,7 @@ import { findUserById } from "../models/user.model.js";
 
 declare module "fastify" {
   interface FastifyRequest {
-    user: { id: string; name: string; email: string };
+    user: { id: string; name: string; email: string; avatarUrl: string | null; createdAt: Date };
   }
 }
 

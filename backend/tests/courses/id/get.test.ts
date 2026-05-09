@@ -34,7 +34,7 @@ describe("GET /api/courses/:id", () => {
     expect(body.id).toBe(course.id);
     expect(Array.isArray(body.lessons)).toBe(true);
     expect(body.creator).toBeDefined();
-    expect(Object.keys(body.creator)).toEqual(["id", "name"]);
+    expect(Object.keys(body.creator).sort()).toEqual(["avatarUrl", "id", "name"]);
     expect(body).not.toHaveProperty("password");
   });
 

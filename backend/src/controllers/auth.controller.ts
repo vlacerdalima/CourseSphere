@@ -1,8 +1,8 @@
 import bcrypt from "bcrypt";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { sign } from "../lib/jwt.js";
-import { createUser, findUserByEmail } from "../models/user.model.js";
-import { loginSchema, registerSchema } from "../schemas/auth.schema.js";
+import { createUser, findUserByEmail, updateUser } from "../models/user.model.js";
+import { loginSchema, registerSchema, updateProfileSchema } from "../schemas/auth.schema.js";
 
 const REGISTER_ERROR = "Não foi possível criar a conta. Verifique os dados informados.";
 const LOGIN_ERROR = "Credenciais inválidas.";
@@ -23,7 +23,6 @@ export async function registerController(
     return reply.status(400).send({ error: REGISTER_ERROR });
   }
 
-  
   const user = await createUser({ name, email, password });
   const token = sign({ userId: user.id });
 
@@ -55,6 +54,27 @@ export async function loginController(
 
   return reply.status(200).send({
     token,
-    user: { id: user.id, name: user.name, email: user.email },
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      avatarUrl: user.avatarUrl,
+      createdAt: user.createdAt,
+    },
   });
+}
+
+export async function updateProfileController(
+  request: FastifyRequest,
+  reply: FastifyReply,
+): Promise<void> {
+  const result = updateProfileSchema.safeParse(request.body);
+  if (!result.success) {
+    return reply.status(400).send({ error: "VALIDATION_ERROR", details: result.error.flatten() });
+  }
+
+  const userId = request.user!.id;
+  const user = await updateUser(userId, result.data);
+
+  return reply.status(200).send({ user });
 }

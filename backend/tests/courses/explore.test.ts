@@ -135,7 +135,7 @@ describe("GET /api/courses/explore", () => {
     expect(response.statusCode).toBe(401);
   });
 
-  it("não deve retornar campo password em nenhum nível → creator tem apenas id e name", async () => {
+  it("não deve retornar campo password em nenhum nível → creator tem apenas id, name e avatarUrl", async () => {
     const { token } = await createAuthenticatedUser(app);
     await createTestCourse(app, token);
 
@@ -148,7 +148,7 @@ describe("GET /api/courses/explore", () => {
     expect(response.statusCode).toBe(200);
     const [course] = response.json();
     expect(course).not.toHaveProperty("password");
-    expect(Object.keys(course.creator)).toEqual(["id", "name"]);
+    expect(Object.keys(course.creator).sort()).toEqual(["avatarUrl", "id", "name"]);
   });
 
   it("deve incluir coverUrl na resposta (null quando ausente, valor quando presente)", async () => {

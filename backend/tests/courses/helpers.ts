@@ -32,7 +32,7 @@ export async function createAuthenticatedUser(
 
   const body = response.json();
   return {
-    user: body.user as { id: string; name: string; email: string },
+    user: body.user as { id: string; name: string; email: string; avatarUrl: string | null; createdAt: string },
     token: body.token as string,
   };
 }
@@ -57,6 +57,6 @@ export async function createTestCourse(
     startDate: string;
     endDate: string;
     createdAt: string;
-    creator: { id: string; name: string };
+    creator: { id: string; name: string; avatarUrl: string | null };
   };
 }
