@@ -4,12 +4,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Eye, EyeOff, Mail, Lock, User, ArrowLeft } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, User, ArrowLeft, Check, X } from "lucide-react";
 
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
 const registerFormSchema = z.object({
   name: z.string().trim().min(2, "Nome deve ter no mínimo 2 caracteres"),
@@ -34,6 +35,31 @@ function getPasswordStrength(password: string): number {
 }
 
 const strengthColor = ["", "bg-red-400", "bg-orange-400", "bg-yellow-400", "bg-green-500"];
+
+function PasswordRequirements({ password }: { password: string }) {
+  const requirements = [
+    { label: "Pelo menos 6 caracteres", met: password.length >= 6 },
+    { label: "Pelo menos uma letra maiúscula", met: /[A-Z]/.test(password) },
+    { label: "Pelo menos um número", met: /[0-9]/.test(password) },
+  ];
+
+  return (
+    <ul className="mt-2 space-y-1">
+      {requirements.map((req) => (
+        <li
+          key={req.label}
+          className={cn(
+            "flex items-center gap-2 text-xs",
+            req.met ? "text-green-600" : "text-muted-foreground"
+          )}
+        >
+          {req.met ? <Check className="h-3.5 w-3.5" /> : <X className="h-3.5 w-3.5" />}
+          {req.label}
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 export function RegisterPage() {
   const { register: registerUser } = useAuth();
@@ -202,6 +228,8 @@ export function RegisterPage() {
                   </button>
                 </div>
 
+                <PasswordRequirements password={passwordValue} />
+
                 {/* Password strength indicator */}
                 <div className="flex gap-1 pt-1">
                   {[1, 2, 3, 4].map((bar) => (
@@ -213,10 +241,6 @@ export function RegisterPage() {
                     />
                   ))}
                 </div>
-
-                {errors.password && (
-                  <p className="text-xs text-destructive">{errors.password.message}</p>
-                )}
               </div>
 
               {serverError && (

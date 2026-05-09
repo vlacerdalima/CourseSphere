@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Plus } from "lucide-react";
+import { Plus, BookOpen } from "lucide-react";
 import { toast } from "sonner";
 import { DashboardLayout } from "@/components/shared/DashboardLayout";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
@@ -99,13 +99,26 @@ export function CourseDetailPage() {
 
               <div className="p-2">
                 {visibleLessons.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-16 text-center">
-                    <p className="font-medium text-gray-700 mb-1">Nenhuma aula ainda</p>
-                    <p className="text-sm text-gray-400">
-                      {isOwner
-                        ? "Crie a primeira aula para começar."
-                        : "As aulas ainda não foram publicadas."}
-                    </p>
+                  <div className="flex flex-col items-center justify-center py-16 text-center gap-4">
+                    <BookOpen className={`w-12 h-12 ${isOwner ? "text-blue-300" : "text-gray-300"}`} />
+                    {isOwner ? (
+                      <>
+                        <div>
+                          <p className="font-semibold text-gray-800 text-base mb-1">
+                            Seu curso está pronto! Agora adicione a primeira aula.
+                          </p>
+                          <p className="text-sm text-gray-400">
+                            Os alunos só conseguem ver aulas publicadas.
+                          </p>
+                        </div>
+                        <Button onClick={() => setIsCreateLessonOpen(true)}>
+                          <Plus className="w-4 h-4 mr-1" />
+                          Adicionar primeira aula
+                        </Button>
+                      </>
+                    ) : (
+                      <p className="text-sm text-gray-400">As aulas ainda não foram publicadas.</p>
+                    )}
                   </div>
                 ) : (
                   visibleLessons.map((lesson, i) => (

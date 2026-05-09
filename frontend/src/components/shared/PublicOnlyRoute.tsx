@@ -13,7 +13,7 @@ export function PublicOnlyRoute({ children }: PublicOnlyRouteProps) {
   }
 
   if (isAuthenticated) {
-    return <Navigate to="/courses" replace />;
+    return <Navigate to="/explore" replace />;
   }
 
   return <>{children}</>;

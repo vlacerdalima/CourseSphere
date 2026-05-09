@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -47,6 +48,7 @@ function toDateInput(iso: string) {
 
 export function CourseFormModal({ open, onOpenChange, course }: CourseFormModalProps) {
   const isEdit = !!course;
+  const navigate = useNavigate();
   const createCourse = useCreateCourse();
   const updateCourse = useUpdateCourse();
 
@@ -88,11 +90,13 @@ export function CourseFormModal({ open, onOpenChange, course }: CourseFormModalP
       if (isEdit) {
         await updateCourse.mutateAsync({ id: course.id, data: payload });
         toast.success("Curso atualizado!");
+        onOpenChange(false);
       } else {
-        await createCourse.mutateAsync(payload);
-        toast.success("Curso criado!");
+        const newCourse = await createCourse.mutateAsync(payload);
+        toast.success("Curso criado! Agora adicione suas aulas.");
+        onOpenChange(false);
+        navigate(`/courses/${newCourse.id}`);
       }
-      onOpenChange(false);
     } catch (error: any) {
       const status = error?.response?.status;
       const body = error?.response?.data;
@@ -103,7 +107,7 @@ export function CourseFormModal({ open, onOpenChange, course }: CourseFormModalP
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{isEdit ? "Editar curso" : "Criar novo curso"}</DialogTitle>
         </DialogHeader>
@@ -143,12 +147,12 @@ export function CourseFormModal({ open, onOpenChange, course }: CourseFormModalP
             )}
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <Label htmlFor="startDate">
                 Data de início <span className="text-red-500">*</span>
               </Label>
-              <Input id="startDate" type="date" {...register("startDate")} />
+              <Input id="startDate" type="date" className="w-full min-w-0" {...register("startDate")} />
               {errors.startDate && (
                 <p className="text-xs text-destructive">{errors.startDate.message}</p>
               )}
@@ -157,7 +161,7 @@ export function CourseFormModal({ open, onOpenChange, course }: CourseFormModalP
               <Label htmlFor="endDate">
                 Data de término <span className="text-red-500">*</span>
               </Label>
-              <Input id="endDate" type="date" {...register("endDate")} />
+              <Input id="endDate" type="date" className="w-full min-w-0" {...register("endDate")} />
               {errors.endDate && (
                 <p className="text-xs text-destructive">{errors.endDate.message}</p>
               )}
