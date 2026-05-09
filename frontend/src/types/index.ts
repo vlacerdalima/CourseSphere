@@ -2,11 +2,18 @@ export interface User {
   id: string;
   name: string;
   email: string;
+  avatarUrl: string | null;
+  createdAt: string;
 }
 
 export interface AuthResponse {
   token: string;
   user: User;
+}
+
+export interface UpdateProfileData {
+  name?: string;
+  avatarUrl?: string | null;
 }
 
 export interface Course {
@@ -17,7 +24,7 @@ export interface Course {
   startDate: string;
   endDate: string;
   createdAt: string;
-  creator: { id: string; name: string };
+  creator: { id: string; name: string; avatarUrl: string | null };
   _count: { lessons: number };
 }
 

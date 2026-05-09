@@ -13,6 +13,7 @@ import { CoursesPage } from "@/pages/courses/CoursesPage";
 import { ExplorePage } from "@/pages/courses/ExplorePage";
 import { CourseDetailPage } from "@/pages/courses/CourseDetailPage";
 import { LessonPlayerPage } from "@/pages/courses/LessonPlayerPage";
+import { ProfilePage } from "@/pages/profile/ProfilePage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 
 const queryClient = new QueryClient({
@@ -65,6 +66,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ExplorePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <ProfilePage />
                 </ProtectedRoute>
               }
             />

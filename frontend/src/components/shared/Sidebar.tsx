@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, Compass, Plus, LogOut } from "lucide-react";
+import { LayoutDashboard, Compass, User, Plus, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Avatar } from "@/components/shared/Avatar";
 import { useAuth } from "@/hooks/useAuth";
 
 interface SidebarProps {
@@ -15,6 +16,7 @@ export function Sidebar({ onCreateCourse, onNavigate }: SidebarProps) {
   const navLinks = [
     { to: "/courses", label: "Meus cursos", icon: LayoutDashboard },
     { to: "/explore", label: "Explorar", icon: Compass },
+    { to: "/profile", label: "Meu perfil", icon: User },
   ];
 
   return (
@@ -65,9 +67,9 @@ export function Sidebar({ onCreateCourse, onNavigate }: SidebarProps) {
       <div className="px-4 py-4 border-t border-gray-100">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-sm font-semibold shrink-0">
-              {user?.name?.[0]?.toUpperCase() ?? "U"}
-            </div>
+            {user && (
+              <Avatar name={user.name} src={user.avatarUrl ?? null} size="sm" />
+            )}
             <p className="text-sm font-medium text-gray-900 truncate">{user?.name}</p>
           </div>
           <button

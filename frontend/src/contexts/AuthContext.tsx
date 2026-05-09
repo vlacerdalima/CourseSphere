@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginService, registerService } from "@/services/auth.service";
-import type { User } from "@/types";
+import { loginService, registerService, updateProfileService } from "@/services/auth.service";
+import type { User, UpdateProfileData } from "@/types";
 
 interface AuthContextType {
   user: User | null;
@@ -11,6 +11,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string, redirectTo?: string) => Promise<void>;
   logout: () => void;
+  updateProfile: (data: UpdateProfileData) => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null);
@@ -62,6 +63,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     navigate("/login");
   }
 
+  async function updateProfile(data: UpdateProfileData) {
+    const updatedUser = await updateProfileService(data);
+    setUser(updatedUser);
+    localStorage.setItem("user", JSON.stringify(updatedUser));
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -72,6 +79,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         login,
         register,
         logout,
+        updateProfile,
       }}
     >
       {children}

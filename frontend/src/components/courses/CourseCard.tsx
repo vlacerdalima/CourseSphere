@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { BookOpen, Calendar, Pencil, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Avatar } from "@/components/shared/Avatar";
 import { getCoverGradient } from "@/lib/coverGradient";
 import type { Course } from "@/types";
 
@@ -60,6 +61,12 @@ export function CourseCard({ course, onEdit, onDelete, showOwnerBadge }: CourseC
             </p>
           )}
         </Link>
+
+        {/* Creator */}
+        <div className="flex items-center gap-2">
+          <Avatar name={course.creator.name} src={course.creator.avatarUrl} size="xs" />
+          <span className="text-xs text-gray-500 truncate">{course.creator.name}</span>
+        </div>
 
         {/* Meta */}
         <div className="flex items-center justify-between text-xs text-gray-400">

@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { ChevronLeft, Calendar, Play, Pencil, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Avatar } from "@/components/shared/Avatar";
 import { getCoverGradient } from "@/lib/coverGradient";
 import type { CourseWithLessons } from "@/types";
 
@@ -18,37 +19,6 @@ function formatDate(iso: string) {
     month: "short",
     year: "numeric",
   }).format(new Date(iso));
-}
-
-function CreatorAvatar({ name, id }: { name: string; id: string }) {
-  const colors = [
-    "bg-blue-500",
-    "bg-violet-500",
-    "bg-emerald-500",
-    "bg-rose-500",
-    "bg-amber-500",
-    "bg-cyan-500",
-  ];
-  let hash = 0;
-  for (let i = 0; i < id.length; i++) {
-    hash = (hash << 5) - hash + id.charCodeAt(i);
-    hash |= 0;
-  }
-  const color = colors[Math.abs(hash) % colors.length];
-  const initials = name
-    .split(" ")
-    .slice(0, 2)
-    .map((w) => w[0])
-    .join("")
-    .toUpperCase();
-
-  return (
-    <span
-      className={`inline-flex items-center justify-center w-6 h-6 rounded-full text-white text-xs font-semibold shrink-0 ${color}`}
-    >
-      {initials}
-    </span>
-  );
 }
 
 export function CourseDetailHeader({ course, isOwner, onEdit, onDelete }: CourseDetailHeaderProps) {
@@ -136,7 +106,7 @@ export function CourseDetailHeader({ course, isOwner, onEdit, onDelete }: Course
             Criador
           </span>
           <div className="flex items-center gap-2">
-            <CreatorAvatar name={course.creator.name} id={course.creator.id} />
+            <Avatar name={course.creator.name} src={course.creator.avatarUrl} size="md" />
             <span className="font-medium text-gray-800">{course.creator.name}</span>
           </div>
         </div>
