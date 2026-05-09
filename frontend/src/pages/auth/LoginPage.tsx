@@ -58,7 +58,7 @@ export function LoginPage() {
         />
 
         <div className="relative z-10">
-          <span className="text-xl font-bold text-blue-400 tracking-tight">Sphere</span>
+          <img src="/favicon.png" alt="CourseSphere" className="h-10 w-auto" />
         </div>
 
         <div className="relative z-10 space-y-6">

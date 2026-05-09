@@ -5,6 +5,7 @@ import { useMyCourses } from "@/hooks/useCourses";
 import { DashboardLayout } from "@/components/shared/DashboardLayout";
 import { Avatar } from "@/components/shared/Avatar";
 import { ProfileFormModal } from "@/components/profile/ProfileFormModal";
+import { CourseFormModal } from "@/components/courses/CourseFormModal";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -12,6 +13,7 @@ export function ProfilePage() {
   const { user } = useAuth();
   const { data: myCourses } = useMyCourses();
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isCreateCourseOpen, setIsCreateCourseOpen] = useState(false);
 
   if (!user) return null;
 
@@ -22,7 +24,7 @@ export function ProfilePage() {
   });
 
   return (
-    <DashboardLayout>
+    <DashboardLayout onCreateCourse={() => setIsCreateCourseOpen(true)}>
       <div className="p-8 lg:p-12">
         <div className="max-w-3xl mx-auto">
           <Card>
@@ -78,6 +80,7 @@ export function ProfilePage() {
       </div>
 
       <ProfileFormModal open={isEditOpen} onOpenChange={setIsEditOpen} />
+      <CourseFormModal open={isCreateCourseOpen} onOpenChange={setIsCreateCourseOpen} />
     </DashboardLayout>
   );
 }
