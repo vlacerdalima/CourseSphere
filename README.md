@@ -1,10 +1,11 @@
-# <!-- Logo aqui --> CourseSphere
+#  <img width="500" height="500" alt="favicon" src="https://github.com/user-attachments/assets/4752650d-fa03-4f7a-9930-6692ff6e6b1d" />
+ *CourseSphere*
 
-**Plataforma de gestão de cursos online** — desafio técnico Full Stack.
+**Plataforma de gestão de cursos online** , desafio técnico Full Stack.
 
 <p>
-  <a href="https://coursesphere-snowy.vercel.app">🌐 Demo</a> ·
-  <a href="https://coursesphere-production.up.railway.app/api">⚙️ API</a>
+  <a href="https://coursesphere-snowy.vercel.app">🌐 Plataforma CourseSphere</a> ·
+  
 </p>
 
 > **Credenciais de teste:** crie sua própria conta em segundos, ou use `demo@coursesphere.com` / `Demo123` para ver a plataforma com conteúdo.
