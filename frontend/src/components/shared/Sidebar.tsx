@@ -20,7 +20,7 @@ export function Sidebar({ onCreateCourse, onNavigate }: SidebarProps) {
   ];
 
   return (
-    <aside className="flex flex-col w-60 shrink-0 h-screen bg-white border-r border-gray-100">
+    <aside className="flex flex-col w-60 shrink-0 h-dvh bg-white border-r border-gray-100">
       {/* Logo */}
       <div className="px-5 py-5 border-b border-gray-100">
         <Link to="/courses" onClick={onNavigate} className="text-lg font-bold tracking-tight select-none">
@@ -30,7 +30,7 @@ export function Sidebar({ onCreateCourse, onNavigate }: SidebarProps) {
       </div>
 
       {/* Nav */}
-      <nav className="flex flex-col gap-1 px-3 py-4 flex-1">
+      <nav className="flex flex-col gap-1 px-3 py-4 flex-1 overflow-y-auto min-h-0">
         {navLinks.map(({ to, label, icon: Icon }) => {
           const active = pathname === to;
           return (

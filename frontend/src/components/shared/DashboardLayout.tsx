@@ -29,7 +29,7 @@ export function DashboardLayout({ children, onCreateCourse = () => {} }: Dashboa
       {/* Drawer em mobile */}
       <div
         className={cn(
-          "fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-200 lg:hidden",
+          "fixed top-0 left-0 h-dvh z-50 w-64 transform transition-transform duration-200 lg:hidden",
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
