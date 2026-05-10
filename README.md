@@ -1,224 +1,259 @@
-# CourseSphere
+# <!-- Logo aqui --> CourseSphere
 
-Plataforma de gestão de cursos online colaborativa. Usuários autenticados podem criar cursos, organizar aulas em rascunho ou publicadas, e visualizar uma turma ilustrativa carregada de uma API externa.
+**Plataforma de gestão de cursos online** — desafio técnico Full Stack.
 
-Projeto desenvolvido como desafio técnico para a vaga de estágio Full Stack na V-LAB.
+<p>
+  <a href="https://coursesphere-snowy.vercel.app">🌐 Demo</a> ·
+  <a href="https://coursesphere-production.up.railway.app/api">⚙️ API</a>
+</p>
 
-## Sumário
+> **Credenciais de teste:** crie sua própria conta em segundos, ou use `demo@coursesphere.com` / `Demo123` para ver a plataforma com conteúdo.
 
-- [Stack](#stack)
-- [Arquitetura](#arquitetura)
-- [Decisões técnicas](#decisões-técnicas)
-- [Estrutura do monorepo](#estrutura-do-monorepo)
-- [Modelo de dados](#modelo-de-dados)
-- [API](#api)
-- [Setup local](#setup-local)
-- [Testes](#testes)
-- [Deploy](#deploy)
-- [Credenciais de teste](#credenciais-de-teste)
+---
+
+## Visão geral
+
+CourseSphere é uma plataforma onde instrutores criam e gerenciam cursos com aulas em vídeo (YouTube/Vimeo), e outros usuários exploram o catálogo da plataforma. O projeto implementa autenticação JWT, CRUD completo de cursos e aulas com autorização por criador, consumo da RandomUser API para alunos fictícios, e deploy contínuo.
+
+<!-- Screenshot principal aqui: GIF ou imagem do dashboard com cursos -->
 
 ## Stack
 
-**Backend:** Node.js, TypeScript, Fastify, Prisma, PostgreSQL, Zod, JWT, bcrypt
-**Frontend:** React 18 + Vite, TypeScript, Tailwind CSS v3, shadcn/ui, TanStack Query, Axios, React Hook Form, React Router DOM v6
-**Infra:** Docker Compose (dev local), Railway (backend), Vercel (frontend), Neon (PostgreSQL gerenciado)
-**Testes:** Jest + Supertest
+| Camada | Tecnologia |
+|---|---|
+| **Backend** | Node.js · Fastify v5 · TypeScript · Prisma ORM |
+| **Banco de dados** | PostgreSQL (Neon — serverless) |
+| **Validação** | Zod |
+| **Autenticação** | JWT (jsonwebtoken) · bcrypt |
+| **Testes** | Jest · ts-jest · Supertest |
+| **Frontend** | React 19 · Vite · TypeScript |
+| **UI** | Tailwind CSS v3 · shadcn/ui (tema Blue) |
+| **Data fetching** | TanStack Query · Axios |
+| **Formulários** | React Hook Form · Zod resolver |
+| **Roteamento** | React Router v7 |
+| **API externa** | RandomUser API (alunos fictícios) |
+| **Deploy** | Railway (backend) · Vercel (frontend) · Neon (banco) |
+
+## Por que Node.js em vez de Ruby on Rails?
+
+O desafio sugere Rails + React, mas permite outras stacks. Optei por **Node.js + Fastify** por ser minha stack principal — com prazo de uma semana e concorrendo com 60 candidatos, priorizar a tecnologia onde tenho mais fluência foi decisão racional: menos tempo debugando framework, mais tempo entregando funcionalidades e qualidade.
+
+Para manter o projeto imediatamente legível por um avaliador com background em Rails, adotei **arquitetura MVC explícita** no backend: controllers, models, routes e schemas em diretórios separados, com as mesmas responsabilidades que teriam no Rails. A separação de camadas é a mesma — só a linguagem muda. TypeScript adiciona tipagem estática que Rails não tem nativamente, e Prisma como ORM oferece migrations e type safety equivalentes ao ActiveRecord.
 
 ## Arquitetura
 
+### Separação Backend / Frontend
+
+O projeto é um **monorepo com duas aplicações independentes**: o backend é uma API REST em Fastify, o frontend é um SPA em React. Cada um deploya separadamente — backend no Railway, frontend no Vercel. A comunicação é exclusivamente via HTTP/JSON, sem server actions ou SSR.
+
+**Por que React + Vite em vez de Next.js?** A aplicação é um dashboard protegido por autenticação — todas as páginas exigem login, não há conteúdo público indexável, e SSR não agrega valor. Next.js adicionaria complexidade de Server Components, diretivas `"use client"`, e verificações de `typeof window` para localStorage, sem nenhum ganho concreto. React + Vite mantém a arquitetura simples, alinhada com a recomendação do desafio ("preferencialmente React"), e com build otimizado como SPA estático.
+
 ```mermaid
-flowchart LR
-    Browser([Browser])
-    Next[Next.js<br/>Vercel]
-    API[Fastify API<br/>Railway]
-    DB[(PostgreSQL<br/>Neon)]
-    Ext[RandomUser API<br/>externa]
+graph LR
+    subgraph Vercel
+        FE[React SPA]
+    end
+    subgraph Railway
+        BE[Fastify API]
+    end
+    subgraph Neon
+        DB[(PostgreSQL)]
+    end
+    subgraph External
+        RU[RandomUser API]
+    end
 
-    Browser -- HTTPS --> Next
-    Next <-- REST + JWT --> API
-    API -- Prisma --> DB
-    Next -. HTTP .-> Ext
+    FE -->|HTTP/JSON + JWT| BE
+    BE -->|Prisma| DB
+    FE -->|fetch| RU
 ```
 
-O frontend nunca acessa o banco diretamente — toda mutação passa pela API. A chamada à RandomUser é feita do lado do cliente, sem persistência, apenas para enriquecer a tela de detalhes do curso com avatares fictícios de "alunos matriculados".
+### MVC no Backend
 
-## Decisões técnicas
+O backend segue arquitetura **MVC explícita**, escolhida para alinhar com as expectativas de avaliação e manter separação clara de responsabilidades:
 
-Esta seção documenta as escolhas não-óbvias do projeto. O documento original do desafio sugere Rails + React, mas permite outras stacks. Cada decisão abaixo foi tomada considerando o trade-off entre prazo de uma semana, qualidade de entrega, e o que minha experiência permite executar com confiança.
-
-### Por que Node.js em vez de Rails
-
-A vaga aparenta usar Rails no dia a dia, e há um peso óbvio em seguir a sugestão. Optei por Node.js porque é minha stack principal e isso me permite focar a semana em **qualidade de execução** em vez de aprender o framework durante o desafio. Um projeto bem estruturado em Node.js demonstra mais maturidade técnica do que um projeto mediano em Rails. A arquitetura do backend foi desenhada explicitamente em MVC para alinhar com a expectativa de quem avalia.
-
-### Monorepo com backend e frontend separados
-
-O documento lista *"separação clara entre backend e frontend"* como critério de prioridade alta. Considerei usar Next.js full-stack (API Routes + frontend no mesmo projeto), o que seria mais simples, mas optei por separar em `/backend` (Fastify) e `/frontend` (Next.js) dentro de um monorepo. Essa estrutura torna a separação cristalina para o avaliador e demonstra entendimento do contrato HTTP entre as duas camadas — em vez de borrá-lo com server actions ou route handlers.
-
-### MVC explícito no backend
-
-O backend segue MVC clássico: `controllers/` manipulam HTTP, `models/` concentram queries e regras de negócio, `routes/` registram endpoints. Controllers nunca acessam o Prisma diretamente — sempre passam pelo model correspondente. Essa disciplina mantém a camada HTTP fina e isola a lógica de domínio, o que facilita testes e simula o padrão Rails que o avaliador conhece.
-
-### Fastify em vez de Express
-
-Fastify foi escolhido pela validação de schema nativa, suporte first-class a TypeScript e padrões mais modernos. A diferença de performance não importa nesse contexto — o que importa é que o código gerado segue patterns mais coesos e atuais.
-
-### Railway no backend, Vercel no frontend, Neon no banco
-
-Vercel é serverless e foi feita para o Next.js — escolha óbvia para o frontend. Mas o Fastify é um servidor HTTP tradicional, que precisa de um processo persistente: Vercel não foi feita para isso. Railway é uma plataforma PaaS na mesma categoria do Heroku/Render, ideal para hospedar processos Node.js de longa duração. Neon é um PostgreSQL serverless gerenciado com tier gratuito generoso, e desacopla o banco da plataforma de aplicação — se um dia eu quisesse migrar do Railway para outro provedor, o banco continua independente.
-
-### JWT manual em vez de NextAuth
-
-O escopo da autenticação é simples: registrar, logar, validar token em rotas protegidas. NextAuth/Auth.js seria overkill e adicionaria dependências e abstração desnecessárias. JWT manual com `jsonwebtoken` é didático, transparente e demonstra entendimento do mecanismo de autenticação stateless — o que provavelmente é mais valioso para um avaliador do que mostrar que sei integrar uma biblioteca pronta.
-
-### Considerações de segurança
-
-A rota de registro **não revela** se um email já está cadastrado. Retornar uma mensagem específica como "email já existe" permite que um atacante enumere usuários do sistema apenas tentando se registrar. A resposta de erro é genérica para qualquer falha (validação ou duplicidade), e o usuário legítimo descobre que já tem conta ao tentar fazer login. A mesma lógica vale para o login: a mensagem é sempre "credenciais inválidas", nunca "email não encontrado" ou "senha incorreta" separadamente.
-
-Senhas são armazenadas com hash bcrypt. JWT tem expiração configurável (default 7 dias). Todas as rotas de mutação verificam não só autenticação, mas autorização — só o criador de um curso pode editá-lo ou deletá-lo, e o mesmo vale para as aulas pertencentes a esse curso.
-
-### Validação com Zod separada dos controllers
-
-Schemas Zod ficam em `src/schemas/`, isolados dos controllers. Essa separação permite reutilizar o mesmo schema em testes, gerar tipos TypeScript via inferência, e manter os controllers focados em orquestração de HTTP em vez de mistura com lógica de validação.
-
-## Estrutura do monorepo
+- **Controllers** — manipulam HTTP: validam input via Zod, checam autorização, chamam o model, retornam response. Nunca acessam Prisma diretamente.
+- **Models** — concentram queries Prisma e regras de domínio. Não conhecem HTTP.
+- **Schemas (Zod)** — definem shapes de validação, puros e reutilizáveis.
+- **Middlewares** — auth (valida JWT, busca user no banco) e plugins do Fastify.
 
 ```
-coursesphere/
-├── backend/
-│   ├── src/
-│   │   ├── controllers/      # manipulam HTTP, chamam models
-│   │   ├── models/           # queries Prisma + regras de negócio
-│   │   ├── routes/           # registram endpoints + middlewares
-│   │   ├── middlewares/      # auth, error handling
-│   │   ├── schemas/          # validação Zod
-│   │   ├── lib/              # prisma client, jwt helpers
-│   │   ├── app.ts            # setup Fastify
-│   │   └── server.ts         # entry point
-│   ├── prisma/schema.prisma
-│   ├── tests/
-│   └── jest.config.ts
-├── frontend/
-│   ├── src/
-│   │   ├── app/              # rotas (App Router)
-│   │   ├── components/       # ui (shadcn), courses, lessons, shared
-│   │   ├── services/         # Axios + serviços de API
-│   │   ├── hooks/            # TanStack Query
-│   │   ├── contexts/         # AuthContext
-│   │   └── types/
-├── docker-compose.yml        # PostgreSQL local
-└── README.md
+backend/src/
+├── controllers/     # HTTP handlers
+├── models/          # Prisma queries + regras de domínio
+├── routes/          # Registro de endpoints
+├── schemas/         # Validação Zod
+├── middlewares/     # Auth middleware
+├── lib/             # Prisma singleton, JWT helpers, authorization
+├── app.ts           # Fastify setup + plugins
+└── server.ts        # Entry point
 ```
 
-## Modelo de dados
+### Modelo de Dados
 
 ```mermaid
 erDiagram
-    USER ||--o{ COURSE : creates
-    COURSE ||--o{ LESSON : contains
+    User ||--o{ Course : creates
+    Course ||--o{ Lesson : contains
 
-    USER {
-        uuid id PK
+    User {
+        string id PK
         string name
         string email UK
         string password
+        string avatarUrl
+        datetime createdAt
+        datetime updatedAt
     }
-    COURSE {
-        uuid id PK
+
+    Course {
+        string id PK
         string name
         string description
-        datetime start_date
-        datetime end_date
-        uuid creator_id FK
+        string coverUrl
+        datetime startDate
+        datetime endDate
+        string creatorId FK
+        datetime createdAt
+        datetime updatedAt
     }
-    LESSON {
-        uuid id PK
+
+    Lesson {
+        string id PK
         string title
-        enum status
-        string video_url
-        uuid course_id FK
+        string description
+        enum status "draft | published"
+        string videoUrl
+        string courseId FK
+        datetime createdAt
+        datetime updatedAt
     }
 ```
 
-IDs são UUIDs (em vez de auto-increment) para evitar enumeration attacks via URL. Cascade delete está configurado em ambas as relações: deletar um usuário remove seus cursos, deletar um curso remove suas aulas.
+## Decisões técnicas
+
+### Segurança
+
+- **Mensagens de erro genéricas:** registro e login nunca revelam se um email já existe ou se a senha está errada — retornam mensagens genéricas pra prevenir enumeração de emails.
+- **JWT com payload mínimo:** apenas `{ userId }`. Email não vai no token porque é mutável e JWT é assinado, não criptografado.
+- **bcrypt no model:** hash de senha encapsulado dentro da função `createUser`, não no controller. O controller é HTTP-only.
+- **Proteção IDOR:** `creatorId` sempre vem do `request.user` (token JWT), nunca do body da requisição. Testado explicitamente.
+- **Ordem de checagem 404 → 403:** controllers verificam existência do recurso antes de checar autorização. Inverter vazaria a informação "esse ID existe".
+- **Token no localStorage:** decisão consciente dado o prazo. Em produção, seria httpOnly cookie com `Secure` e `SameSite=Strict`. O backend foi projetado para `Authorization: Bearer`, e migrar para cookies exigiria refatorar middleware, CORS e todos os testes.
+
+### Performance
+
+- **Autorização em memória:** em vez de uma função `isCourseCreator` com query separada, a verificação de autoria usa `course.creator.id` já retornado por `findCourseById`. Elimina roundtrip ao banco em cada update/delete.
+- **`_count` no Prisma:** contagem de aulas por curso via subquery do Prisma em vez de N+1 requests no frontend.
+- **TanStack Query:** invalidação seletiva após mutações. Criar curso invalida `["courses"]` (matcher parcial); criar aula invalida `["course", courseId]`.
+
+### Frontend
+
+- **Services tipados:** wrappers Axios com tipos TypeScript. Nenhum componente chama Axios direto.
+- **RandomUser com seed:** avatares determinísticos por `courseId` — mesmo curso sempre mostra os mesmos alunos. Chamada via `fetch` nativo (não Axios) pra evitar injeção do JWT numa API externa.
+- **Gradiente determinístico:** cursos sem `coverUrl` recebem gradiente gerado por hash do UUID. Mesmo curso, mesma cor, sempre.
+- **Visibilidade de rascunhos:** criador do curso vê todas as aulas; outros usuários veem apenas `status: "published"`. Filtro aplicado em lista de aulas, sidebar do player, e navegação Anterior/Próxima.
 
 ## API
 
-Base URL: `/api`. Rotas protegidas requerem header `Authorization: Bearer <token>`.
+Base URL: `/api`. Rotas protegidas requerem `Authorization: Bearer <token>`. Erros retornam `{ "error": "mensagem" }`.
+
+### Autenticação
 
 | Método | Rota | Auth | Descrição |
-|--------|------|------|-----------|
-| POST | `/auth/register` | — | Cria usuário e retorna JWT |
-| POST | `/auth/login` | — | Autentica e retorna JWT |
-| GET | `/courses` | ✓ | Lista cursos (suporta `?search=`) |
-| GET | `/courses/:id` | ✓ | Detalhes do curso com aulas |
+|---|---|---|---|
+| POST | `/auth/register` | — | Cria conta. Retorna `{ token, user }` |
+| POST | `/auth/login` | — | Autentica. Retorna `{ token, user }` |
+| PATCH | `/auth/profile` | ✓ | Atualiza nome e/ou avatarUrl |
+
+### Cursos
+
+| Método | Rota | Auth | Descrição |
+|---|---|---|---|
+| GET | `/courses` | ✓ | Lista cursos do usuário. `?search=` |
+| GET | `/courses/explore` | ✓ | Lista todos os cursos da plataforma. `?search=` |
+| GET | `/courses/:id` | ✓ | Detalhes com aulas |
 | POST | `/courses` | ✓ | Cria curso |
 | PUT | `/courses/:id` | ✓ criador | Atualiza curso |
-| DELETE | `/courses/:id` | ✓ criador | Remove curso |
-| GET | `/courses/:courseId/lessons` | ✓ | Lista aulas (suporta `?status=`) |
+| DELETE | `/courses/:id` | ✓ criador | Remove curso e aulas (cascade) |
+
+### Aulas (aninhadas em cursos)
+
+| Método | Rota | Auth | Descrição |
+|---|---|---|---|
+| GET | `/courses/:courseId/lessons` | ✓ | Lista aulas. `?status=draft\|published` |
 | POST | `/courses/:courseId/lessons` | ✓ criador | Cria aula |
 | PUT | `/courses/:courseId/lessons/:id` | ✓ criador | Atualiza aula |
 | DELETE | `/courses/:courseId/lessons/:id` | ✓ criador | Remove aula |
 
-Validação de regras de negócio: `endDate >= startDate` em cursos, `title >= 3 chars` em ambos, `videoUrl` deve ser URL válida quando informado, `status` aceita apenas `draft` ou `published`.
+## Cobertura de testes
 
-## Setup local
+```
+Test Suites: 13 passed, 13 total
+Tests:       103 passed, 103 total
+```
 
-**Pré-requisitos:** Node 20+, Docker, npm.
+Os testes cobrem:
+- Auth (registro, login, atualização de perfil)
+- CRUD de cursos (criação, listagem, filtro, edição, exclusão)
+- Endpoint de exploração (listagem global, isolamento de dados)
+- CRUD de aulas (criação, listagem com filtro de status, edição, exclusão)
+- Autorização (403 pra não-criador, 404 antes de 403)
+- Proteção IDOR (creatorId do body é ignorado)
+- Cascade (deletar curso remove aulas)
+- Acesso cruzado (aula de outro curso retorna 404)
+- Whitelist de videoUrl (YouTube e Vimeo)
 
-1. Clonar o repositório:
-   ```bash
-   git clone <repo-url> coursesphere && cd coursesphere
-   ```
+## Rodando localmente
 
-2. Copiar os arquivos de ambiente:
-   ```bash
-   cp .env.example .env
-   cp backend/.env.example backend/.env
-   cp frontend/.env.example frontend/.env
-   ```
+### Pré-requisitos
 
-3. Subir o PostgreSQL local:
-   ```bash
-   docker compose up -d
-   ```
+- Node.js 20+
+- Docker (para PostgreSQL local)
 
-4. Backend:
-   ```bash
-   cd backend
-   npm install
-   npx prisma migrate dev
-   npm run dev
-   ```
-   API disponível em `http://localhost:3333`.
+### Setup
 
-5. Frontend (em outro terminal):
-   ```bash
-   cd frontend
-   npm install
-   npm run dev
-   ```
-   App disponível em `http://localhost:5173`.
+```bash
+# Clonar
+git clone https://github.com/seu-usuario/coursesphere.git
+cd coursesphere
 
-## Testes
+# Backend
+cd backend
+cp .env.example .env          # configurar DATABASE_URL e JWT_SECRET
+npm install
+docker compose up -d           # sobe PostgreSQL local
+npx prisma migrate dev         # aplica migrations
+npm run dev                    # API em http://localhost:3333
 
-Os testes do backend cobrem as regras de negócio críticas: validação de datas em cursos, autorização (apenas o criador edita/deleta), e fluxo de autenticação.
+# Frontend (novo terminal)
+cd frontend
+cp .env.example .env           # VITE_API_URL=http://localhost:3333/api
+npm install
+npm run dev                    # SPA em http://localhost:5173
+```
+
+### Variáveis de ambiente
+
+**Backend (`.env`):**
+```
+DATABASE_URL=postgresql://user:pass@localhost:5432/coursesphere
+JWT_SECRET=sua-chave-secreta-aqui
+JWT_EXPIRES_IN=7d
+NODE_ENV=development
+```
+
+**Frontend (`.env`):**
+```
+VITE_API_URL=http://localhost:3333/api
+```
+
+### Rodando testes
 
 ```bash
 cd backend
 npm test
 ```
-
-## Deploy
-
-> _Links a serem preenchidos após deploy._
-
-- **Frontend (Vercel):** —
-- **Backend (Railway):** —
-- **Banco (Neon):** PostgreSQL gerenciado, conectado via `DATABASE_URL`.
-
-## Credenciais de teste
-
-> _A serem preenchidas após o deploy. O fluxo de registro está disponível e funcional para criação de novos usuários._
 
 ## Diário de desenvolvimento
 
@@ -232,8 +267,6 @@ Implementei o **módulo de autenticação completo** com registro e login. Decis
 
 Revisando o controller de auth depois de pronto, percebi que o hash da senha estava sendo feito ali — o que tecnicamente é regra de negócio vazando pra camada HTTP. Refatorei movendo o `bcrypt.hash` pra dentro do `createUser` no model, e a verificação de senha pra um helper `verifyUserPassword` também no model. O controller ficou verdadeiramente HTTP-only: valida input, chama o model, retorna status. Pequena mudança, mas consolida a separação MVC que é critério explícito de avaliação.
 
-**Stack confirmada ao final do dia:** Fastify · TypeScript · Prisma · PostgreSQL · Zod · JWT · bcrypt · Jest · Next.js · Tailwind · shadcn/ui · TanStack Query.
-
 ### Dia 2 — Cursos, aulas e backend completo
 
 Implementei os módulos de **cursos** e **aulas** com CRUD completo, cobrindo o backend inteiro em dois dias. No módulo de cursos, optei por verificar autoria em memória (`course.creator.id === request.user.id`) usando dados já retornados por `findCourseById`, em vez de criar uma função `isCourseCreator` com query separada — elimina uma roundtrip ao banco em toda operação de update/delete sem perder segurança. Durante a implementação, identifiquei que o middleware de auth injetava apenas o payload do JWT (`{ userId }`) em vez do usuário completo. Refatorei para buscar o usuário no banco a cada request autenticado — isso padronizou `request.user.id` em todo o codebase e adicionou uma camada de segurança: se o usuário for deletado após o JWT ser emitido, a requisição retorna 401 em vez de prosseguir com dados órfãos.
@@ -242,4 +275,24 @@ No módulo de aulas, a decisão principal foi usar **rotas aninhadas** (`/api/co
 
 Validação de `videoUrl` usa whitelist de domínios (YouTube e Vimeo) via `new URL().hostname` dentro de um `.refine()` do Zod. `courseId` é imutável no PUT — campo não declarado no schema Zod, então descartado silenciosamente. Status padrão de aula é `draft`.
 
-**Resultado do dia:** backend 100% completo. 78 testes passando (11 auth + 28 cursos + 39 aulas), zero regressões entre módulos. Pronto pra iniciar o frontend.
+**Resultado do dia:** backend 100% completo. 78 testes passando (11 auth + 28 cursos + 39 aulas), zero regressões entre módulos.
+
+### Dia 3 — Frontend: migração, fundação e deploy
+
+Migrei o frontend de **Next.js para React + Vite** antes de escrever qualquer lógica. A decisão foi técnica: toda a aplicação é um dashboard protegido por autenticação — não há páginas públicas indexáveis, SEO não é requisito, e SSR não traz benefício. React + Vite alinha com a recomendação do desafio e elimina a complexidade de Server Components.
+
+Implementei a **infraestrutura completa do frontend**: instância Axios com interceptors (JWT no request, cleanup em 401), AuthContext com hidratação do localStorage, ProtectedRoute e PublicOnlyRoute, TanStack Query provider, e todos os services tipados (auth, courses, lessons). Telas de login e registro funcionais com React Hook Form + Zod.
+
+Fiz o **deploy no Railway** (backend) e **Vercel** (frontend). Resolvi problemas de CORS (porta 5173 do Vite vs 3000 do Next.js antigo), PORT do Railway (atribuição dinâmica vs fixo), e configuração de SPA no Vercel (vercel.json com rewrites).
+
+### Dia 4+ — Design, integração e polish
+
+Trabalhei com protótipo de design e implementei: home page com hero e social proof, login e cadastro com layout split-screen e manifesto, dashboard com sidebar e grid de cursos, página de explorar (todos os cursos da plataforma), detalhe do curso com alunos matriculados via RandomUser API, player de aula com embed de YouTube/Vimeo e navegação Anterior/Próxima.
+
+Adicionei ao backend: endpoint de exploração (`GET /api/courses/explore`), campos `coverUrl` nos cursos e `description` nas aulas, `avatarUrl` nos usuários com PATCH de perfil, e página de perfil no frontend.
+
+Refinamentos de UX baseados em testes com usuários reais: sidebar responsiva com drawer em mobile, redirect pós-registro para `/explore` (novo usuário vê conteúdo imediatamente), redirect pós-criação de curso para a página de detalhe (guia o usuário a criar aulas), lista de requisitos de senha em tempo real (✓/✗ visual), modal de curso responsivo, e deduplicação de avatares do RandomUser.
+
+---
+
+*Desenvolvido por Vitor Lacerda — CIn/UFPE, 2026.*
