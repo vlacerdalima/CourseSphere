@@ -1,19 +1,19 @@
-#  <img width="250" height="250" alt="favicon" src="https://github.com/user-attachments/assets/4752650d-fa03-4f7a-9930-6692ff6e6b1d" />
+# <img width="250" height="250" alt="favicon" src="https://github.com/user-attachments/assets/4752650d-fa03-4f7a-9930-6692ff6e6b1d" />
 ## ***CourseSphere***
 
-**Plataforma de gestão de cursos online** , desafio técnico Full Stack.
+**Plataforma de gestão de cursos online**, desafio técnico Full Stack.
 
 <p>
-  <a href="https://coursesphere-snowy.vercel.app">🌐 Plataforma CourseSphere</a> ·
-  
+  <a href="https://coursesphere-snowy.vercel.app">🌐 Plataforma CourseSphere</a>
 </p>
 
- **Credenciais de teste:** crie sua própria conta em segundos, ou use: 
+**Credenciais de teste:** crie sua própria conta em segundos, ou use: 
+
 | Email | Senha |
 |---|---|
 | **demo@coursesphere.com** | **DemoVlab123**|
 
-<p>para ver a plataforma com conteúdo.</p>
+**Para uma imersão completa no projeto, recomendo fortemente que, ao entrar na plataforma, assista ao **Vídeo de Apresentação Técnica (4 min)** disponível na aba **Explorar**. Nele, utilizo o próprio CourseSphere para explicar as principais decisões de arquitetura, trade-offs de engenharia e funcionalidades em tempo real. É a forma mais eficiente de contextualizar este README com a experiência prática do produto.**
 
 <div align="center">
   <video src="https://private-user-images.githubusercontent.com/170010293/590459342-9dbcc37c-1e11-4450-87e1-39b56a2d04f7.mp4?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3Nzg1MDU3NTYsIm5iZiI6MTc3ODUwNTQ1NiwicGF0aCI6Ii8xNzAwMTAyOTMvNTkwNDU5MzQyLTlkYmNjMzdjLTFlMTEtNDQ1MC04N2UxLTM5YjU2YTJkMDRmNy5tcDQ_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjYwNTExJTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI2MDUxMVQxMzE3MzZaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT0xOTUzZDgzN2FjZmE2ZDRmZWJjOThjZDA2MGI4ZDM5MmVjYTJiMjdlNjczMGU0ZDIxOGRiNmY2YTliNDI2NTg2JlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCZyZXNwb25zZS1jb250ZW50LXR5cGU9dmlkZW8lMkZtcDQifQ.kviA0XBSb_ZnIdn49d9KBpH4w6e9mQvmKAZiQPfTCHM" width="100%" autoplay loop muted playsinline controls>
@@ -22,7 +22,7 @@
 
 ## Visão geral
 
-CourseSphere é uma plataforma onde instrutores criam e gerenciam cursos com aulas em vídeo (YouTube/Vimeo), e outros usuários exploram o catálogo da plataforma. O projeto implementa autenticação JWT, CRUD completo de cursos e aulas com autorização por criador, consumo da RandomUser API para alunos fictícios, e deploy contínuo.
+CourseSphere é uma plataforma onde instrutores criam e gerenciam cursos com aulas em vídeo (YouTube/Vimeo), e outros usuários exploram o catálogo da plataforma. O projeto implementa autenticação JWT, CRUD completo de cursos e aulas com autorização por criador, consumo da RandomUser API para alunos fictícios, e deploy contópicos.
 
 ## Stack
 
