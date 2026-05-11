@@ -1,5 +1,5 @@
-#  <img width="500" height="500" alt="favicon" src="https://github.com/user-attachments/assets/4752650d-fa03-4f7a-9930-6692ff6e6b1d" />
- *CourseSphere*
+#  <img width="250" height="250" alt="favicon" src="https://github.com/user-attachments/assets/4752650d-fa03-4f7a-9930-6692ff6e6b1d" />
+## ***CourseSphere***
 
 **Plataforma de gestão de cursos online** , desafio técnico Full Stack.
 
@@ -8,9 +8,12 @@
   
 </p>
 
-> **Credenciais de teste:** crie sua própria conta em segundos, ou use `demo@coursesphere.com` / `Demo123` para ver a plataforma com conteúdo.
+ **Credenciais de teste:** crie sua própria conta em segundos, ou use: 
+| Email | Senha |
+|---|---|
+| **demo@coursesphere.com** | **DemoVlab123**|
 
----
+<p>para ver a plataforma com conteúdo.</p>
 
 ## Visão geral
 
