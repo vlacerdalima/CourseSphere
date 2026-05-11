@@ -64,6 +64,7 @@ export function CourseDetailPage() {
   const visibleLessons = isOwner
     ? course.lessons
     : course.lessons.filter((l) => l.status === "published");
+  const firstLesson = visibleLessons[0] ?? null;
 
   return (
     <DashboardLayout onCreateCourse={() => navigate("/courses")}>
@@ -74,6 +75,7 @@ export function CourseDetailPage() {
             <CourseDetailHeader
               course={course}
               isOwner={isOwner}
+              firstLesson={firstLesson}
               onEdit={() => setIsEditCourseOpen(true)}
               onDelete={() => setIsDeleteCourseOpen(true)}
             />

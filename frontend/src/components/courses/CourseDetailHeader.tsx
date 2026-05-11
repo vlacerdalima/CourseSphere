@@ -4,11 +4,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/shared/Avatar";
 import { getCoverGradient } from "@/lib/coverGradient";
-import type { CourseWithLessons } from "@/types";
+import type { CourseWithLessons, Lesson } from "@/types";
 
 type CourseDetailHeaderProps = {
   course: CourseWithLessons;
   isOwner: boolean;
+  firstLesson: Lesson | null;
   onEdit: () => void;
   onDelete: () => void;
 };
@@ -21,7 +22,7 @@ function formatDate(iso: string) {
   }).format(new Date(iso));
 }
 
-export function CourseDetailHeader({ course, isOwner, onEdit, onDelete }: CourseDetailHeaderProps) {
+export function CourseDetailHeader({ course, isOwner, firstLesson, onEdit, onDelete }: CourseDetailHeaderProps) {
   const total = course.lessons.length;
   const published = course.lessons.filter((l) => l.status === "published").length;
 
@@ -91,11 +92,21 @@ export function CourseDetailHeader({ course, isOwner, onEdit, onDelete }: Course
         )}
       </div>
 
-      {/* Title + description */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900 leading-tight">{course.name}</h1>
-        {course.description && (
-          <p className="mt-2 text-gray-500 leading-relaxed">{course.description}</p>
+      {/* Title + description + CTA */}
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 leading-tight">{course.name}</h1>
+          {course.description && (
+            <p className="mt-2 text-gray-500 leading-relaxed">{course.description}</p>
+          )}
+        </div>
+        {firstLesson && (
+          <Button asChild size="lg" className="shrink-0 w-full sm:w-auto">
+            <Link to={`/courses/${course.id}/lessons/${firstLesson.id}`}>
+              <Play className="mr-2 h-4 w-4" />
+              Assistir aula 01
+            </Link>
+          </Button>
         )}
       </div>
 
